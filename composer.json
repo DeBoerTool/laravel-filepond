@@ -1,24 +1,29 @@
 {
-  "name": "dbt/laravel-project",
-  "description": "Laravel Project Scaffolding",
+  "name": "dbt/laravel-filepond",
+  "description": "Filepond server implementation for Laravel",
   "keywords": [
     "dbt",
     "php",
     "laravel"
   ],
-  "homepage": "https://github.com/dbt/laravel-project",
+  "homepage": "https://github.com/dbt/laravel-filepond",
   "license": "MIT",
-  "type": "project",
+  "type": "package",
   "authors": [
     {
       "name": "Daniel S. Deboer",
       "email": "daniel.s.deboer@gmail.com",
       "role": "Developer"
+    },
+    {
+      "name": "Sanjit Singh",
+      "email": "iamsanjit@hotmail.com",
+      "role": "Maintainer"
     }
   ],
   "require": {
     "php": "^7.2",
-    "laravel/framework": "~5.8.0"
+    "laravel/framework": "^5.8.0"
   },
   "require-dev": {
     "orchestra/testbench-browser-kit": "~3.8.0",
@@ -32,18 +37,24 @@
   },
   "autoload": {
     "psr-4": {
-      "Dbt\\LaravelProject\\": ["Source", "Infra"]
+      "Dbt\\LaravelFilepond\\": [
+        "Source",
+        "Infra"
+      ]
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Dbt\\LaravelProject\\Tests\\": "Tests"
+      "Dbt\\LaravelFilepond\\Tests\\": "Tests"
     }
   },
   "scripts": {
-    "test-integration": "phpunit --configuration=phpunit.xml --no-coverage --testsuite integration",
+    "test-integration": "phpunit --configuration=phpunit.xml.dist --no-coverage --testsuite integration",
     "test-unit": "phpunit --configuration=phpunit.xml --no-coverage --testsuite unit",
-    "test": ["@test-integration", "@test-unit"],
+    "test": [
+      "@test-integration",
+      "@test-unit"
+    ],
     "coverage": "phpunit --configuration=phpunit.xml --coverage-html Reports/Coverage",
     "pcov": "php -d pcov.enabled=1 vendor/phpunit/phpunit/phpunit --coverage-html Reports/Coverage",
     "stat": "psalm"
@@ -51,5 +62,15 @@
   "config": {
     "sort-packages": true,
     "vendor-dir": "Vendor"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Dbt\\LaravelFilepond\\LaravelFilepondServiceProvider"
+      ],
+      "aliases": {
+        "LaravelFilepond": "Dbt\\LaravelFilepond\\LaravelFilepondFacade"
+      }
+    }
   }
 }

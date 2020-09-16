@@ -1,21 +1,63 @@
-# Laravel Project Template
+# Laravel Filepond
+
+This package provides Laravel backend implementation of filepond.
+
+## Requirements
+This LaravelFilepond package requires PHP 7.2+ and Laravel 5.8+
 
 ## Installation
 
-You can clone this repository:
+LaravelFilepond can be installed via composer
 
 ```bash
-git clone https://github.com/DeBoerTool/laravel-package.git
+composer require dbt/laravel-filepond
+```
+This package will automatically register a service provider.
+
+You can optionally publish the config file
+```bash
+php artisan vendor:publish --provider="Dbt\LaravelFilepond\LaravelFilepondServiceProvider" --tag="config"
+```
+This is the default content of the file
+
+```php
+<?php
+
+return [
+
+    /**
+     * Disk on which to store temporary files
+     */
+    'disk_name' => env('FILEPOND_TEMP_DISK', 'local'),
+
+    /**
+     * Name of field under file will be posted to server for process request
+     */
+    'field' => env('FILEPOND_FIELD', 'filepond'),
+
+    /**
+     * This suffix will be used for meta files
+     */
+    'meta_file_suffix' => '.metadata'
+];
+
 ```
 
+By default, the laravel filepont will store its temporary files on Laravel's local disk. If you want a dedicated disk you should add a disk to config/filesystems.php. This would be a typical configuration:
+```php
+    // ...
+    'disks' => [
+        // ...
+         'temp' => [
+            'driver' => 'local',
+            'root' => storage_path('temp'),
+        ],
+    // ...
+```
+Don't forget to ignore the directory of your configured disk so the files won't end up in your git repo.
 
-But it's more likely you'll want to use this as a template. Use GitHub's "Use this template" button to do that.
-
-## Usage
-
-Change the project name and namespaces in `composer.json`, `UnitTestCase`, `IntegrationTestCase`, and `ServiceProvider`. Copy `phpunit.xml.dist` to `phpunit.xml` and update the environment values to fit your project. Run `composer dump-autoload` and you should be ready to go.
-
-If you wish to change the name of `ServiceProvider`, keep in mind that the reference in your `IntegrationTestCase` must be changed as well. 
+## Basic Usage
+Coming soon.
 
 ## Etc.
 
