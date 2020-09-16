@@ -15,5 +15,10 @@ return [
     /**
      * This suffix will be used for meta files
      */
-    'meta_file_suffix' => '.metadata'
+    'meta_file_suffix' => '.metadata',
+
+    /**
+     * Middleware for filepond routes. It can be string or an array
+     */
+    'middleware' => 'web'
 ];
