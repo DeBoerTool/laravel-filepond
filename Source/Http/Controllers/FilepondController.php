@@ -4,6 +4,7 @@ namespace Dbt\LaravelFilepond\Http\Controllers;
 
 use Dbt\LaravelFilepond\Http\Requests\StoreRequest;
 use Dbt\LaravelFilepond\LaravelFilepond;
+use Illuminate\Http\Request;
 
 class FilepondController extends Controller
 {
@@ -24,5 +25,12 @@ class FilepondController extends Controller
         $locationId = $this->filePond->store($file);
 
         return response($locationId)->header('Content-Type', 'text/plain');
+    }
+
+    public function revert(Request $request)
+    {
+        $locationId = $request->getContent();
+
+        $this->filePond->delete($locationId);
     }
 }

@@ -14,9 +14,14 @@ class LaravelFilepond
     /** @var string */
     private $metaFileSuffix;
 
+    /** @var \Illuminate\Contracts\Filesystem\Filesystem */
+    private $disk;
+
     public function __construct()
     {
         $this->diskName = config('laravel-filepond.disk_name');
+
+        $this->disk = Storage::disk($this->diskName);
 
         $this->metaFileSuffix = config('laravel-filepond.meta_file_suffix');
     }
@@ -24,34 +29,75 @@ class LaravelFilepond
     /**
      * Store temporary uploaded file
      */
-    public function store(UploadedFile $file)
+    public function store(UploadedFile $file): string
     {
-        $this->storeMeta($file);
+        if (! $this->storeMeta($file)) {
+            throw new Exception('Unable to store meta file.');
+        }
 
-        return $file->store('/', ['disk' => $this->diskName]);
+        $locationId = $file->store('/', ['disk' => $this->diskName]);
+
+        if (!$locationId) {
+            throw new Exception('Unable to store file.');
+        }
+
+        return $locationId;
     }
 
-    public function get(string $locationId)
+    /**
+     * Check if uploaded file exists
+     */
+    public function exists($locationId): bool
     {
         $disk = Storage::disk($this->diskName);
 
         $metaDataFileName = $this->getMetaFileName($locationId);
 
-        if (! $disk->exists($locationId) || ! $disk->exists($metaDataFileName)) {
+        return $disk->exists($locationId) && $disk->exists($metaDataFileName);
+    }
+
+    /**
+     * Delete uploaded file and its meta
+     */
+    public function delete(string $locationId): bool
+    {
+        return $this->disk->delete([
+            $locationId,
+            $this->getMetaFileName($locationId)
+        ]);
+    }
+
+    /**
+     * Get Uploaded file
+     */
+    public function get(string $locationId): UploadedFile
+    {
+        if (! $this->exists($locationId)) {
             throw new Exception('File does not exists.');
         }
 
-        $metaData = json_decode($disk->get($metaDataFileName), true);
+        $metaData = $this->getMeta($locationId);
 
         return new UploadedFile(
-            $disk->getAdapter()->applyPathPrefix($locationId),
+            $this->disk->getAdapter()->applyPathPrefix($locationId),
             $metaData['original_name'],
             $metaData['mime_type'],
             $metaData['error']
         );
     }
 
-    private function storeMeta(UploadedFile $file)
+    /**
+     * Get meta of the given location
+     */
+    private function getMeta($locationId) : array
+    {
+        return json_decode($this->disk->get($this->getMetaFileName($locationId)), true);
+    }
+
+    /**
+     * Store meta of uploaded file
+     */
+    private function storeMeta(UploadedFile $file): bool
     {
         $filename = $this->getMetaFileName($file->hashName());
 
@@ -61,10 +107,13 @@ class LaravelFilepond
             'error' => $file->getError(),
         ];
 
-        Storage::disk($this->diskName)->put($filename, json_encode($meta));
+        return $this->disk->put($filename, json_encode($meta));
     }
 
-    private function getMetaFileName(string $file)
+    /**
+     * Generate meta file name
+     */
+    private function getMetaFileName(string $file): string
     {
         return  $file . $this->metaFileSuffix;
     }
