@@ -41,4 +41,18 @@ class ProcessFileTest extends TestCase
 
         $response->assertJsonValidationErrors([$this->config['field'] => 'required']);
     }
+
+    /** @test */
+    public function field_must_be_file()
+    {
+        Storage::fake($this->config['disk_name']);
+
+        $response = $this->postJson('/filepond/process', [
+            $this->config['field'] => 'string'
+        ]);
+    
+        $response->assertStatus(422);
+
+        $response->assertJsonValidationErrors([$this->config['field'] => 'file']);
+    }
 }

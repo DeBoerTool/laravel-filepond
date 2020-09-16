@@ -3,6 +3,7 @@
 namespace Dbt\LaravelFilepond;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class LaravelFilepondServiceProvider extends ServiceProvider
 {
@@ -11,7 +12,7 @@ class LaravelFilepondServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadRoutes();
+        $this->registerRoutes();
 
         if ($this->app->runningInConsole()) {
             $this->publishConfig();
@@ -32,10 +33,21 @@ class LaravelFilepondServiceProvider extends ServiceProvider
         });
     }
 
-    private function loadRoutes(): void
+    protected function registerRoutes(): void
     {
-        $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
+        Route::group($this->routeConfiguration(), function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        });
     }
+
+    protected function routeConfiguration(): array
+    {
+        return [
+            'prefix' => config('laravel-filepond.route_prefix', 'filepond'),
+            'middleware' => config('laravel-filepond.middleware', [])
+        ];
+    }
+
 
     private function publishConfig() : void
     {
