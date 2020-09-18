@@ -4,8 +4,9 @@ namespace Dbt\LaravelFilepond;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Contracts\Validation\Factory as ValidationFactory;
 
-class LaravelFilepondServiceProvider extends ServiceProvider
+class FilepondServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
@@ -17,6 +18,8 @@ class LaravelFilepondServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishConfig();
         }
+
+        $this->extendValidator();
     }
 
     /**
@@ -29,7 +32,7 @@ class LaravelFilepondServiceProvider extends ServiceProvider
 
         // Register the main class to use with the facade
         $this->app->singleton('laravel-filepond', function () {
-            return new LaravelFilepond();
+            return new Filepond();
         });
     }
 
@@ -54,5 +57,12 @@ class LaravelFilepondServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/config.php' => config_path('laravel-filepond.php'),
         ], 'config');
+    }
+
+    private function extendValidator(): void
+    {
+        app(ValidationFactory::class)->resolver(function ($translator, $data, $rules, $messages, $customAttributes) {
+            return new Validator($translator, $data, $rules, $messages, $customAttributes, app('laravel-filepond'));
+        });
     }
 }

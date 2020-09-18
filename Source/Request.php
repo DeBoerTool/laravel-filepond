@@ -10,7 +10,7 @@ class Request extends FormRequest
     {
         return [];
     }
-    
+
     public function file($key = null, $default = null)
     {
         if ($files = parent::file($key, $default)) {
@@ -18,10 +18,10 @@ class Request extends FormRequest
         }
 
         $locationIds = (array) $this->input($key);
-        
+
         $results = [];
-        
-        $filepond = app(LaravelFilepond::class);
+
+        $filepond = app(Filepond::class);
 
         foreach ($locationIds as $serverId) {
             $results[] = $filepond->get($serverId);

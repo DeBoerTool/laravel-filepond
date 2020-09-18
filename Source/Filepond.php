@@ -3,10 +3,10 @@
 namespace Dbt\LaravelFilepond;
 
 use Exception;
-use Illuminate\Http\UploadedFile;
+use Illuminate\Http\UploadedFile as BaseUploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-class LaravelFilepond
+class Filepond
 {
     /** @var string */
     private $diskName;
@@ -29,7 +29,7 @@ class LaravelFilepond
     /**
      * Store temporary uploaded file
      */
-    public function store(UploadedFile $file): string
+    public function store(BaseUploadedFile $file): string
     {
         if (! $this->storeMeta($file)) {
             throw new Exception('Unable to store meta file.');
@@ -51,9 +51,9 @@ class LaravelFilepond
     {
         $disk = Storage::disk($this->diskName);
 
-        $metaDataFileName = $this->getMetaFileName($locationId);
-
-        return $disk->exists($locationId) && $disk->exists($metaDataFileName);
+        return $locationId
+            && $disk->exists($locationId)
+            && $disk->exists($this->getMetaFileName($locationId));
     }
 
     /**
@@ -78,6 +78,10 @@ class LaravelFilepond
 
         $metaData = $this->getMeta($locationId);
 
+        /**
+         * We will create uploaded file in test mode. It does
+         * not enforce HTTP uploads
+         */
         return new UploadedFile(
             $this->disk->getAdapter()->applyPathPrefix($locationId),
             $metaData['original_name'],
@@ -97,7 +101,7 @@ class LaravelFilepond
     /**
      * Store meta of uploaded file
      */
-    private function storeMeta(UploadedFile $file): bool
+    private function storeMeta(BaseUploadedFile $file): bool
     {
         $filename = $this->getMetaFileName($file->hashName());
 

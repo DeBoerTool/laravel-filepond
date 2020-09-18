@@ -9,7 +9,7 @@ use Dbt\LaravelFilepond\Tests\TestCase;
 class ProcessFileTest extends TestCase
 {
     /** @test */
-    public function process_the_file()
+    public function process_the_file(): void
     {
         $uploadedFile = UploadedFile::fake()->image('avatar.jpg');
 
@@ -36,21 +36,21 @@ class ProcessFileTest extends TestCase
         Storage::fake($this->config['disk_name']);
 
         $response = $this->postJson('/filepond/process');
-    
+
         $response->assertStatus(422);
 
         $response->assertJsonValidationErrors([$this->config['field'] => 'required']);
     }
 
     /** @test */
-    public function field_must_be_file()
+    public function field_must_be_file(): void
     {
         Storage::fake($this->config['disk_name']);
 
         $response = $this->postJson('/filepond/process', [
             $this->config['field'] => 'string'
         ]);
-    
+
         $response->assertStatus(422);
 
         $response->assertJsonValidationErrors([$this->config['field'] => 'file']);

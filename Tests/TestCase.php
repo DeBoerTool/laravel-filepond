@@ -2,7 +2,7 @@
 
 namespace Dbt\LaravelFilepond\Tests;
 
-use Dbt\LaravelFilepond\LaravelFilepondServiceProvider;
+use Dbt\LaravelFilepond\FilepondServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
@@ -18,6 +18,6 @@ abstract class TestCase extends Orchestra
 
     protected function getPackageProviders($app)
     {
-        return [LaravelFilepondServiceProvider::class];
+        return [FilepondServiceProvider::class];
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Dbt\LaravelFilepond\LaravelFilepond\Tests;
 
-use Dbt\LaravelFilepond\LaravelFilepond;
+use Dbt\LaravelFilepond\Filepond;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Dbt\LaravelFilepond\Tests\TestCase;
@@ -18,14 +18,14 @@ class RevertFileTest extends TestCase
 
         Storage::fake($this->config['disk_name']);
 
-        $locationId = app(LaravelFilepond::class)->store($uploadedFile);
+        $locationId = app(Filepond::class)->store($uploadedFile);
 
-        $this->assertTrue(app(LaravelFilepond::class)->exists($locationId));
+        $this->assertTrue(app(Filepond::class)->exists($locationId));
 
         $response = $this->call('DELETE', 'filepond/revert', [], [], [], [], $locationId);
 
         $response->assertStatus(200);
 
-        $this->assertFalse(app(LaravelFilepond::class)->exists($locationId));
+        $this->assertFalse(app(Filepond::class)->exists($locationId));
     }
 }

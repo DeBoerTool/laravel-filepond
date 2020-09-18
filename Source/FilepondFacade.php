@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \Dbt\LaravelFilepond\LaravelFilepond\Skeleton\SkeletonClass
  */
-class LaravelFilepondFacade extends Facade
+class FilepondFacade extends Facade
 {
     /**
      * Get the registered name of the component.
