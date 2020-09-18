@@ -66,10 +66,10 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Dbt\\LaravelFilepond\\LaravelFilepondServiceProvider"
+        "Dbt\\LaravelFilepond\\FilepondServiceProvider"
       ],
       "aliases": {
-        "LaravelFilepond": "Dbt\\LaravelFilepond\\LaravelFilepondFacade"
+        "LaravelFilepond": "Dbt\\LaravelFilepond\\FilepondFacade"
       }
     }
   }
